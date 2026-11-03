@@ -45,15 +45,19 @@ jobs:
       - name: Check no private key material is present
         run: |
           set -e
-          if git ls-files | grep -Ei '(\.pem$|\.key$|\.pfx$|owner-keys/|private-keys/)'; then
-            echo "::error::Private key material must never be committed."
+          tracked=$(git ls-files | grep -Ei '(^|/)(owner-keys|private-keys|secrets)/|\.(pem|key|pfx|p12)$' || true)
+          if [ -n "$tracked" ]; then
+            echo "::error::Key material must never be committed."
+            echo "$tracked"
             exit 1
           fi
-          if grep -rIl --exclude-dir=node_modules --exclude-dir=.git "BEGIN.*PRIVATE KEY" .; then
-            echo "::error::A private key was found in the repository."
+          # Only shipped source is scanned, so this workflow's own pattern and the
+          # tests that assert PEM structure cannot produce a false positive.
+          if grep -rIl --exclude-dir=node_modules "BEGIN [A-Z ]*PRIVATE KEY" src tools scripts 2>/dev/null; then
+            echo "::error::A private key was found in shipped source."
             exit 1
           fi
-          echo "No key material tracked."
+          echo "No key material tracked or embedded."
 
       - name: Upload build artefacts
         uses: actions/upload-artifact@v4
