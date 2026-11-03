@@ -13,7 +13,9 @@
  * printers/installs configured in raw mode; see docs/PRINTING.md.
  */
 import { BrowserWindow, app } from 'electron';
-import { writeFileSync } from 'node:fs';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 export interface PdfResult {
   path: string;
@@ -32,13 +34,23 @@ async function withHiddenWindow<T>(html: string, fn: (win: BrowserWindow) => Pro
       nodeIntegration: false,
     },
   });
+  // Chromium blocks top-level `data:` navigation, so the document is written to
+  // a temporary file and loaded from disk. The directory is removed afterwards.
+  const dir = mkdtempSync(join(tmpdir(), 'merqo-print-'));
+  const file = join(dir, 'document.html');
+  writeFileSync(file, html, 'utf8');
   try {
-    await win.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(html)}`);
+    await win.loadFile(file);
     // Give Chromium a tick to lay out fonts (Bengali shaping) before capture.
     await new Promise((resolve) => setTimeout(resolve, 120));
     return await fn(win);
   } finally {
     win.destroy();
+    try {
+      rmSync(dir, { recursive: true, force: true });
+    } catch {
+      /* best effort */
+    }
   }
 }
 

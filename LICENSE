@@ -1,0 +1,63 @@
+MERQO BUSINESS SUITE — PROPRIETARY SOFTWARE LICENCE
+Copyright © 2026 Shohan Khan. All rights reserved.
+
+This software and its accompanying files, documentation, database schema and
+licence files (the "Software") are proprietary. They are licensed, not sold.
+
+1. LICENCE GRANT
+   Subject to payment of the applicable fee and to a valid, signed MERQO licence
+   file, the owner grants the licensee a non-exclusive, non-transferable licence
+   to install and use the Software on the number of devices stated on that
+   licence file, for the licensee's own internal business purposes.
+
+2. RESTRICTIONS
+   The licensee may not:
+   a) copy, distribute, publish, sub-licence, rent, lease or resell the Software;
+   b) modify, translate, decompile, disassemble or reverse-engineer the Software,
+      except to the extent such restriction is prohibited by applicable law;
+   c) remove or alter any copyright, licence or attribution notice;
+   d) use the Software to provide a service bureau to third parties without
+      written permission;
+   e) distribute any licence file, activation code or signing key issued to them.
+
+3. LICENCE FILES AND DEVICE BINDING
+   A MERQO licence file is bound to the device fingerprint recorded at issue.
+   Moving the Software to another computer requires a new licence file. Licence
+   files are verified offline with an Ed25519 signature; a modified licence file
+   is invalid.
+
+4. EVALUATION
+   Without a valid licence file the Software runs in a 14-day evaluation mode.
+   After that period the Software becomes read-only: existing records remain
+   readable and exportable, and backups remain available, but new transactions
+   cannot be posted.
+
+5. SUPPORT AND UPDATES
+   Support and update terms, if any, are those separately agreed in writing with
+   the owner. No warranty of fitness for a particular purpose is given, and no
+   claim of regulatory approval (including VAT/Mushak approval) is made.
+
+6. DATA
+   All business data is stored locally on the licensee's computer. The licensee
+   is responsible for taking and storing backups. The owner has no access to the
+   licensee's data unless the licensee provides a copy for support purposes.
+
+7. TERMINATION
+   This licence terminates automatically if the licensee breaches any term above.
+   On termination the licensee must stop using and remove the Software. Sections
+   2, 6 and 8 survive termination.
+
+8. LIMITATION OF LIABILITY
+   To the maximum extent permitted by law, the owner is not liable for indirect,
+   incidental or consequential loss, loss of profit, or loss or corruption of
+   data, however caused. The licensee's exclusive remedy is replacement of the
+   Software or refund of the fee paid, at the option of the owner.
+
+9. GOVERNING LAW
+   This licence is governed by the laws of the People's Republic of Bangladesh.
+
+Contact: merqoonline@gmail.com
+
+NOTE: This document states the intended commercial terms. It has not been
+reviewed by a lawyer; the owner should obtain legal review before commercial
+distribution.

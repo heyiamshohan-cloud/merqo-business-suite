@@ -204,12 +204,25 @@ export async function openDatabase(
   if (wantBetter) {
     const open = loadBetterSqlite();
     if (open) {
-      const raw = open(target);
-      const db = wrapBetterSqlite(raw, inMemory);
-      applyPragmas(db, opts, inMemory);
-      return db;
-    }
-    if (preferredDriver === 'better-sqlite3') {
+      try {
+        const raw = open(target);
+        const db = wrapBetterSqlite(raw, inMemory);
+        applyPragmas(db, opts, inMemory);
+        return db;
+      } catch (err) {
+        // The module can load while its native `.node` binding is missing (a
+        // common state after `npm install --ignore-scripts`, and in the test
+        // sandbox where native downloads are blocked). Fall back instead of
+        // failing the whole application.
+        if (preferredDriver === 'better-sqlite3') {
+          throw new Error(
+            `better-sqlite3 driver was requested but could not be opened: ${
+              err instanceof Error ? err.message : String(err)
+            }`,
+          );
+        }
+      }
+    } else if (preferredDriver === 'better-sqlite3') {
       throw new Error('better-sqlite3 driver was requested but is not installed');
     }
   }

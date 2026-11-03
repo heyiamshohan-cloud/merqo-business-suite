@@ -239,14 +239,17 @@ export function ProductsScreen(): JSX.Element {
       if (stockAction.mode === 'opening') {
         await call('inventory', 'openingStock', {
           productId: stockAction.product.id,
-          qty: qty.toString(),
+          // Quantities cross the IPC boundary in milli-units, like everywhere
+          // else in the core, so 1.5 kg is 1500 and never a float.
+          qty: Math.round(qty * 1000),
+          unitCost: stockAction.product.purchase_price,
           note: stockReason || 'Opening stock',
         });
         toast('success', lang === 'bn' ? 'প্রারম্ভিক স্টক যোগ হয়েছে।' : 'Opening stock recorded.');
       } else {
         await call('inventory', 'adjust', {
           productId: stockAction.product.id,
-          newQty: qty.toString(),
+          newQty: Math.round(qty * 1000),
           reason: stockReason || 'Stock adjustment',
         });
         toast('success', lang === 'bn' ? 'স্টক সমন্বয় হয়েছে।' : 'Stock adjusted.');
