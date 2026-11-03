@@ -1,0 +1,45 @@
+{
+  "name": "merqo-business-suite",
+  "productName": "MERQO Business Suite",
+  "version": "1.0.0",
+  "description": "MERQO — offline POS, inventory, accounting and business management software for Bangladesh",
+  "private": true,
+  "type": "module",
+  "author": {
+    "name": "Shohan Khan",
+    "email": "merqoonline@gmail.com"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "main": "dist/main/index.cjs",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint . --ext .ts,.tsx",
+    "build:main": "node scripts/build/build-main.mjs",
+    "build:license-generator": "node scripts/build/build-license-generator.mjs",
+    "build:db-utility": "node scripts/build/build-db-utility.mjs",
+    "build:renderer": "vite build",
+    "build": "npm run typecheck && npm run build:renderer && npm run build:main",
+    "start": "electron .",
+    "dev": "vite"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.3.17",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^33.3.1",
+    "electron-builder": "^25.1.8",
+    "esbuild": "^0.24.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

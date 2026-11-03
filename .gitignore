@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+.pnp.*
+npm-debug.log*
+yarn-error.log*
+
+# Build output
+dist/
+dist-*/
+release/
+out/
+*.tsbuildinfo
+
+# Test / coverage artifacts
+coverage/
+test-results/
+tests/.tmp/
+.vitest/
+
+# Environment & secrets — NEVER commit
+.env
+.env.*
+*.pem
+*.key
+*.pfx
+secrets/
+private-keys/
+owner-keys/
+*.license-key
+
+# Runtime / local data
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+data/
+backups/
+logs/
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
