@@ -1,0 +1,115 @@
+name: Release (Windows)
+
+# Builds the customer installer and the two owner-only utilities on a real
+# Windows runner. This is the only place where Windows binaries are produced:
+# the sandbox this repository was developed in is Linux and cannot create or
+# verify a Windows .exe.
+on:
+  workflow_dispatch:
+    inputs:
+      draft:
+        description: 'Create the GitHub release as a draft'
+        required: false
+        default: 'true'
+      publish:
+        description: 'Publish a GitHub release (leave false to only build artefacts)'
+        required: false
+        default: 'false'
+      version:
+        description: 'Version to build (must match package.json, e.g. 1.0.0)'
+        required: true
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    name: Windows installer + owner tools
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      # Native build enabled here: better-sqlite3 ships prebuilt binaries for
+      # Node 22 / win32-x64, and the packaged app uses that driver.
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Tests
+        run: npm test
+
+      - name: Build application bundles
+        run: |
+          npm run build:renderer
+          npm run build:main
+
+      - name: Build owner-only tools (single-file Windows executables)
+        run: npm run build:owner-tools
+
+      - name: Build NSIS installer
+        env:
+          # Optional: set CSC_LINK / CSC_KEY_PASSWORD repository secrets to sign.
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: npx electron-builder --win nsis --publish never
+
+      - name: Checksums
+        shell: pwsh
+        run: |
+          Get-ChildItem release/*.exe | ForEach-Object {
+            "$((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower())  $($_.Name)"
+          } | Tee-Object -FilePath release/SHA256SUMS.txt
+
+      - name: Verify installer contents
+        shell: pwsh
+        run: |
+          if (!(Test-Path "release/MERQO-Setup-*.exe")) { throw "Installer was not produced" }
+          Get-ChildItem release | Format-Table Name, Length
+
+      # Owner tools are intentionally NOT attached to the public release: they are
+      # for the owner/support only. They are available as workflow artefacts.
+      - name: Upload owner tools (private to the workflow)
+        uses: actions/upload-artifact@v4
+        with:
+          name: merqo-owner-tools-windows
+          path: |
+            dist/tools/MERQO-License-Generator.exe
+            dist/tools/MERQO-DB-Utility.exe
+          retention-days: 30
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: merqo-installer-windows
+          path: |
+            release/MERQO-Setup-*.exe
+            release/SHA256SUMS.txt
+            release/latest.yml
+          retention-days: 30
+
+      - name: Publish GitHub release
+        # A manual run only publishes when explicitly requested, so build checks
+        # never create tags or releases by accident.
+        if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && github.event.inputs.publish == 'true')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRAFT: ${{ github.event.inputs.draft || 'false' }}
+          TAG: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || format('v{0}', github.event.inputs.version) }}
+        run: |
+          $draftFlag = if ($env:DRAFT -eq 'true') { '--draft' } else { '--latest' }
+          $notes = "MERQO Business Suite Windows installer. See CHANGELOG.md and REQUIREMENTS_TRACEABILITY.md. The installer is unsigned unless a signing certificate was configured; verify the SHA-256 checksum before installing."
+          gh release view $env:TAG 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $env:TAG --title "MERQO Business Suite $env:TAG" --notes $notes $draftFlag
+          }
+          gh release upload $env:TAG release/MERQO-Setup-*.exe release/SHA256SUMS.txt --clobber

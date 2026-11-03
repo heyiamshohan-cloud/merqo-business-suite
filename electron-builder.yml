@@ -1,0 +1,59 @@
+appId: com.merqo.businesssuite
+productName: MERQO Business Suite
+copyright: Copyright © 2026 Shohan Khan. All rights reserved.
+
+directories:
+  output: release
+  buildResources: build
+
+# Only the built output ships. Source, tests, tools and owner key material are
+# never packaged; the owner utilities are delivered separately.
+files:
+  - dist/renderer/**/*
+  - dist/main/**/*
+  - dist/preload/**/*
+  - package.json
+  - '!**/*.map'
+  - '!dist/tools/**'
+  - '!**/node_modules/*/{CHANGELOG.md,README.md,readme.md,LICENSE,license,*.md}'
+  - '!**/node_modules/.bin'
+
+asar: true
+asarUnpack:
+  - '**/node_modules/better-sqlite3/**'
+
+extraMetadata:
+  main: dist/main/index.cjs
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  icon: build/icon.ico
+  artifactName: MERQO-Setup-${version}.${ext}
+  publisherName: MERQO
+  legalTrademarks: ''
+  # No code-signing certificate is configured. The installer is unsigned and
+  # Windows SmartScreen will show a warning until the owner provides a
+  # certificate through CSC_LINK / CSC_KEY_PASSWORD in CI.
+  signAndEditExecutable: true
+  requestedExecutionLevel: asInvoker
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowElevation: true
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  shortcutName: MERQO Business Suite
+  uninstallDisplayName: MERQO Business Suite
+  deleteAppDataOnUninstall: false
+  runAfterFinish: true
+  menuCategory: false
+  artifactName: MERQO-Setup-${version}.${ext}
+  installerLanguages:
+    - en_US
+
+publish: null

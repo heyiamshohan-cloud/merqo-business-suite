@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Typecheck, test and bundle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      # --ignore-scripts: better-sqlite3 is not needed for the test suite (it
+      # uses node:sqlite) and skipping native builds keeps CI fast and hermetic.
+      - name: Install dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Typecheck (core, main, preload, renderer, tools)
+        run: npm run typecheck
+
+      - name: Unit and integration tests
+        run: npm test
+
+      - name: Build renderer
+        run: npm run build:renderer
+
+      - name: Build main + preload
+        run: npm run build:main
+
+      - name: Build owner tools (scripts only on Linux)
+        run: npm run build:owner-tools
+
+      - name: Check no private key material is present
+        run: |
+          set -e
+          tracked=$(git ls-files | grep -Ei '(^|/)(owner-keys|private-keys|secrets)/|\.(pem|key|pfx|p12)$' || true)
+          if [ -n "$tracked" ]; then
+            echo "::error::Key material must never be committed."
+            echo "$tracked"
+            exit 1
+          fi
+          # Only shipped source is scanned, so this workflow's own pattern and the
+          # tests that assert PEM structure cannot produce a false positive.
+          if grep -rIl --exclude-dir=node_modules "BEGIN [A-Z ]*PRIVATE KEY" src tools scripts 2>/dev/null; then
+            echo "::error::A private key was found in shipped source."
+            exit 1
+          fi
+          echo "No key material tracked or embedded."
+
+      - name: Upload build artefacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: merqo-build-linux
+          path: |
+            dist/main
+            dist/preload
+            dist/renderer
+            dist/tools
+          retention-days: 7
