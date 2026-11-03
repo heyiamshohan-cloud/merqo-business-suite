@@ -1,0 +1,94 @@
+/**
+ * MERQO design tokens — light mode only (by product decision).
+ *
+ * A restrained palette: deep teal as the brand colour, warm neutrals for
+ * surfaces, and semantic colours reserved for state (danger/warning/success).
+ * Nothing here is decorative for its own sake; every token exists so that
+ * spacing, type and radius stay identical across every screen.
+ */
+:root {
+  /* Brand */
+  --brand-900: #07362c;
+  --brand-800: #0a4739;
+  --brand-700: #0d5544;
+  --brand-600: #0f5c4a;
+  --brand-500: #14765f;
+  --brand-100: #e6f1ee;
+  --brand-50: #f2f8f6;
+
+  /* Neutrals */
+  --ink-900: #111a20;
+  --ink-800: #1f2937;
+  --ink-700: #374151;
+  --ink-600: #4b5563;
+  --ink-500: #6b7280;
+  --ink-400: #9aa5b1;
+  --ink-300: #cbd4dc;
+  --ink-200: #e3e8ec;
+  --ink-100: #eef1f4;
+  --ink-50: #f6f7f9;
+  --surface: #ffffff;
+  --surface-alt: #fafbfc;
+
+  /* Semantic */
+  --danger-700: #a02020;
+  --danger-600: #c0392b;
+  --danger-100: #fdeceb;
+  --warning-700: #9a6206;
+  --warning-600: #b7791f;
+  --warning-100: #fdf6e3;
+  --success-700: #1f6b3a;
+  --success-600: #2f855a;
+  --success-100: #e9f6ee;
+  --info-600: #2b6cb0;
+  --info-100: #eaf2fb;
+
+  /* Typography */
+  --font-bn: 'Noto Sans Bengali', 'Nirmala UI', 'SolaimanLipi', 'Segoe UI', sans-serif;
+  --font-en: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --font-ui: var(--font-bn), var(--font-en);
+  --font-num: 'Inter', 'Segoe UI', ui-monospace, monospace;
+
+  --text-xs: 11.5px;
+  --text-sm: 12.5px;
+  --text-base: 13.5px;
+  --text-md: 15px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --text-2xl: 27px;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* Spacing scale (4px base) */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+
+  /* Geometry */
+  --radius-sm: 6px;
+  --radius: 9px;
+  --radius-lg: 12px;
+  --radius-pill: 999px;
+  --border: 1px solid var(--ink-200);
+  --border-strong: 1px solid var(--ink-300);
+
+  --shadow-xs: 0 1px 1px rgba(17, 26, 32, 0.04);
+  --shadow-sm: 0 1px 2px rgba(17, 26, 32, 0.06), 0 1px 3px rgba(17, 26, 32, 0.04);
+  --shadow-md: 0 4px 12px rgba(17, 26, 32, 0.08);
+  --shadow-lg: 0 12px 32px rgba(17, 26, 32, 0.14);
+
+  /* Controls */
+  --control-h: 34px;
+  --control-h-sm: 28px;
+  --control-h-lg: 40px;
+  --sidebar-w: 224px;
+  --header-h: 56px;
+}
